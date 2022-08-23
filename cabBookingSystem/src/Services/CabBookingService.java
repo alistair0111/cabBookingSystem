@@ -24,24 +24,16 @@ public class CabBookingService {
     }
 
     public List<Driver> findRides(String userName, Location source, Location destination) throws DriverNotAvailableException {
-        List<Driver> allDriversAvailable = new ArrayList<>();
-//                driverService.getDriverRepository().getDriverMap().values().stream()
-//                .filter(Driver->{
-//                    if(Driver.isAvailable() && (Math.abs(Driver.getLocation().getLongitude()- source.getLongitude())
-//                       + Math.abs(Driver.getLocation().getLatitude()- source.getLatitude()))
-//                        <= MAX_DISTANCE){
-//                        return true;
-//                    }
-//                    return false;
-//                }).toList();
-        for(Map.Entry<String, Driver> driverEntries: driverService.getDriverRepository().getDriverMap().entrySet()){
-            Location driverLocation = driverEntries.getValue().getLocation();
-            boolean availability =driverEntries.getValue().isAvailable();
-            int calculatedDistance = Math.abs(driverLocation.getLongitude()-source.getLongitude()) + Math.abs(driverLocation.getLatitude() - source.getLatitude());
-            if(availability && calculatedDistance<=MAX_DISTANCE ){
-                allDriversAvailable.add(driverEntries.getValue());
-            }
-        }
+        List<Driver> allDriversAvailable =
+                driverService.getDriverRepository().getDriverMap().values().stream()
+                .filter(Driver->{
+                    if(Driver.isAvailable() && (Math.abs(Driver.getLocation().getLongitude()- source.getLongitude())
+                       + Math.abs(Driver.getLocation().getLatitude()- source.getLatitude()))
+                        <= MAX_DISTANCE){
+                        return true;
+                    }
+                    return false;
+                }).toList();
         if(allDriversAvailable.size()==0){
             throw new DriverNotAvailableException("No driver found in your area");
         }
